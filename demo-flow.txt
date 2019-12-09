@@ -1,0 +1,104 @@
+= PREP
+* Make sure you have an AWS and Azure account
+* Install AWS CLI, SAM CLI, and Azure CLI
+* Create S3 Bucket for SAM packaging
+* Create an AWS Execution Rol
+* prepare lambda-live
+* delete functions and stacks
+  $ ./delete.sh,
+  $ ./delete-native.sh
+  $ aws cloudformation delete-stack --stack-name QuarkusRestLambda
+  $ aws cloudformation delete-stack --stack-name QuarkusRestLambdaNative
+  $ aws cloudformation delete-stack --stack-name SpringMvcDemo
+* Set LAMBDA_ROLE environment variable.  This is specific to your lambda account
+* Set up sam path
+$ export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+* Chrome started with window that has dev tools to show invocation times
+
+= DEMO
+
+== Regular Simple Lambda
+
+1. Show simple lambda code in lambda-live project
+2. build and deploy pure lambda in lambda-demo
+$ cd lambda-demo
+$ mvn clean install
+$ ./create.sh
+$ ./invoke.sh
+3. Show memory usage, coldstart and bill time
+4. ./delete.sh -- clean up as handler has changed
+
+== Simple Lambda with Quarkus/Graal
+
+1. build project
+$ mvn clean install -Dnative
+2. While build talk about setup and pom.xml
+3. Create and Run
+$ ./create-native.sh
+$ ./invoke-native.sh
+4. Show memory usage, coldstart and bill time compared to simple lambda
+
+== Add Spring DI
+
+1. Edit pom.xml
+2. Add quarkus-spring-di dependency
+3. Create GreetingService component
+4. Inject GreetingService deployment
+5. Build and run
+$ mvn clean install
+$ ./delete.sh #clean up as handler class has changed
+$ ./create.sh
+$ ./invoke.sh
+
+== Convert to Spring MVC
+1. Edit pom.xml
+2. Add quarkus-spring-web dependency
+3. Add quarkus-amazon-lambda-http dependency
+4. Change GreetingLambda to be Spring MVC
+- @RestController
+- @RequestMapping
+- @PathVariable
+- Remove Context paramter
+5. Build and deploy
+$ mvn clean install
+$ sam package --template-file sam.jvm.yaml --output-template-file packaged.yaml --s3-bucket billburke2
+$ sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name QuarkusRestLambda
+
+while waiting go back to slide to explain setup.
+
+== Spring MVC Raw
+
+1. Go to spring-mvc-awslabs
+2. build and deploy
+$ mvn clean package
+$ sam package --template-file sam.yaml --output-template-file packaged.yaml --s3-bucket billburke2
+$ sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name SpringMvcDemo
+3. Explain project - show extra boilerplate and hard coded DI
+4. Get browser URL from describe-stacks
+$ aws cloudformation describe-stacks --stack-name SpringMvcDemo
+5. Run in browser
+
+== Back to Quarkus
+
+1. Get browser URL from describe-stacks
+$ aws cloudformation describe-stacks --stack-name QuarkusRestLambda
+2. Run in browser show time
+3. Build native
+$ mvn clean install -Dnative
+$ sam package --template-file sam.native.yaml --output-template-file packaged.yaml --s3-bucket billburke2
+$ sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name QuarkusRestLambdaNative
+4. Get URL
+$ aws cloudformation describe-stacks --stack-name QuarkusRestLambdaNative
+5. Show in Browser
+
+
+
+
+
+
+
+
+
+
+
+
