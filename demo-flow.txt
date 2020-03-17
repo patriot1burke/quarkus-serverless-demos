@@ -4,6 +4,7 @@
 * Create S3 Bucket for SAM packaging
 * Create an AWS Execution Rol
 * prepare lambda-live
+- cp -r lambda-live live-demo
 * delete functions and stacks
   $ ./delete.sh,
   $ ./delete-native.sh
@@ -43,7 +44,7 @@ $ ./invoke-native.sh
 1. Edit pom.xml
 2. Add quarkus-spring-di dependency
 3. Create GreetingService component
-4. Inject GreetingService deployment
+4. @Autowired GreetingService deployment
 5. Build and run
 $ mvn clean install
 $ ./delete.sh #clean up as handler class has changed
@@ -64,7 +65,7 @@ $ mvn clean install
 $ sam package --template-file sam.jvm.yaml --output-template-file packaged.yaml --s3-bucket billburke2
 $ sam deploy --template-file packaged.yaml --capabilities CAPABILITY_IAM --stack-name QuarkusRestLambda
 
-while waiting go back to slide to explain setup.
+While deploying, talk about Spring MVC Raw
 
 == Spring MVC Raw
 
